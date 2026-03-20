@@ -1,4 +1,3 @@
-import sys from 'node:sys'
 import { sleep, promises } from '@wp1001/js'
 
 import { get, download } from './network.js'
