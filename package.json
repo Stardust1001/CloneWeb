@@ -1,0 +1,19 @@
+{
+  "name": "CloneWeb",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "push": "git add . && git commit -m \"add\" && git push origin main",
+    "pull": "git checkout . && git pull origin main",
+    "cloc": "cloc *.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@wp1001/js": "latest",
+    "@wp1001/node": "latest",
+    "iconv": "^3.0.1"
+  }
+}
