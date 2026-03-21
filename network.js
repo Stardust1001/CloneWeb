@@ -58,8 +58,11 @@ export const download = async (url, timeout = config.download_timeout) => {
   for (let i = 0; i < config.num_retries; i++) {
     try {
       const { buffer } = await request(url, timeout)
-      await save(url, buffer)
-      logger.info('[downloaded]\t' + url)
+      if (buffer.length) {
+        await save(url, buffer)
+        logger.info('[downloaded]\t' + url)
+        return
+      }
     } catch (err) {
       logger.error(err.toString())
     }
