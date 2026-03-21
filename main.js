@@ -3,7 +3,7 @@ import { sleep, promises } from '@wp1001/js'
 import { get, download } from './network.js'
 import { config, allLinks, newUrls } from './common.js'
 import logger from './logger.js'
-import { processHtml, processCss, getSuffix, getAbsPath, save } from './utils.js'
+import { processHtml, processCss, getExtname, getAbsPath, save } from './utils.js'
 
 const start = async () => {
   const text = await get(config.site)
@@ -16,11 +16,11 @@ const start = async () => {
     let numFinished = 0
     await promises.schedule(async i => {
       const url = urls[i]
-      const suffix = getSuffix(url) || 'html'
-      if (suffix === 'css') {
+      const extname = getExtname(url) || 'html'
+      if (extname === 'css') {
         const text = await get(url)
         processCss(url, text)
-      } else if (config.patterns.html_ext.test(suffix)) {
+      } else if (config.patterns.html_ext.test(extname)) {
         const text = await get(url)
         processHtml(url, text)
       } else {

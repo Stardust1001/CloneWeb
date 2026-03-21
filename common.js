@@ -3,7 +3,7 @@ export const newUrls = []
 
 export const config = {
   // 要下载的目标网站
-  site: 'https://www.example.com',
+  site: 'https://www.example.com/',
   // 允许关联下载哪些域名，正则表达式匹配
   host_pattern: /example.com/,
 
@@ -19,6 +19,12 @@ export const config = {
   download_timeout: 1200e3,
   // 同一个请求的尝试次数
   num_retries: 3,
+  // 日志控制
+  logger: {
+    // 控制台日志关闭，默认是开启
+    // console: false,
+    // file: false
+  },
   // 正则匹配
   patterns: {
     // html 网址的后缀类型

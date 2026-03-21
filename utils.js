@@ -29,7 +29,7 @@ export const processCss = (url, text) => {
   logger.info('[processed]\t' + url)
 }
 
-export const getSuffix = url => {
+export const getExtname = url => {
   const { pathname } = new URL(url)
   return path.extname(pathname).slice(1).toLowerCase()
 }
@@ -115,8 +115,21 @@ export const buffer2Text = (headers, buffer) => {
 export const getAbsPath = url => {
   let { host, pathname } = new URL(url)
   let filename = pathname.slice(1)
-  if (!filename) filename = 'index.html'
-  if (!filename.includes('.')) filename += '.html'
+  if (filename) {
+    if (filename.includes('.')) {
+      const ext = path.extname(pathname).slice(1).toLowerCase()
+      if (ext !== 'html' && config.patterns.html_ext.test(ext)) {
+        const dirname = path.dirname(pathname)
+        const basename = path.basename(pathname).split('.')[0] + '.html'
+        pathname = path.join(dirname, basename)
+        filename = pathname.slice(1)
+      }
+    } else {
+      filename += '.html'
+    }
+  } else {
+    filename = 'index.html'
+  }
   filename = filename.replace(/(\s|%20)/g, '_')
   host = host.replace(/[\.\:]/g, '_')
   return path.join(config.dirname, host, filename)
