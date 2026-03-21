@@ -29,8 +29,8 @@ const start = async () => {
       }
       logger.info(`已处理 ${++numFinished}/${allLinks.size} 条链接`)
     }, urls.length, config.concurrency)
-    fsUtils.write('./allDomains.txt', [...allDomains].join('\n'))
-    fsUtils.write('./allLinks.txt', [...allLinks].join('\n'))
+    fsUtils.write('./all_domains.txt', [...allDomains].join('\n'))
+    fsUtils.write('./all_links.txt', [...allLinks].join('\n'))
   }
   logger.info(`已结束，总共检索到 ${allLinks.size} 条链接`)
 }
