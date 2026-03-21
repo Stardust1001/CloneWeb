@@ -84,13 +84,15 @@ export const processMatched = (url, items) => {
     if (isValidUrl(link)) {
       const formatted = formatUrl(link, url)
       if (!formatted) return
+      let domain
       try {
-        new URL(formatted)
+        domain = new URL(formatted).hostname
       } catch {
         return logger.error('无效连接: ' + formatted)
       }
       valids[part] = [link, formatted]
       if (!allLinks.has(formatted)) {
+        allDomains.add(domain)
         allLinks.add(formatted)
         newUrls.push(formatted)
       }

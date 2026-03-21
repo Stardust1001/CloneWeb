@@ -1,7 +1,8 @@
+import { fsUtils } from '@wp1001/node'
 import { sleep, promises } from '@wp1001/js'
 
 import { get, download } from './network.js'
-import { config, allLinks, newUrls } from './common.js'
+import { config, allDomains, allLinks, newUrls } from './common.js'
 import logger from './logger.js'
 import { processHtml, processCss, getExtname, getAbsPath, save } from './utils.js'
 
@@ -28,6 +29,8 @@ const start = async () => {
       }
       logger.info(`已处理 ${++numFinished}/${allLinks.size} 条链接`)
     }, urls.length, config.concurrency)
+    fsUtils.write('./allDomains.txt', [...allDomains].join('\n'))
+    fsUtils.write('./allLinks.txt', [...allLinks].join('\n'))
   }
   logger.info(`已结束，总共检索到 ${allLinks.size} 条链接`)
 }
