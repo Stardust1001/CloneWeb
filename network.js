@@ -39,7 +39,8 @@ export const get = async (url, timeout = config.timeout) => {
   let text = ''
   for (let i = 0; i < config.num_retries; i++) {
     try {
-      const { headers, buffer } = await request(url, timeout)
+      const { status, headers, buffer } = await request(url, timeout)
+      if (status < 200 || status >= 400) break
       text = buffer2Text(headers, buffer)
       if (text) break
     } catch (err) {
@@ -57,7 +58,8 @@ export const download = async (url, timeout = config.download_timeout) => {
   if (await fsUtils.exists(filepath)) return
   for (let i = 0; i < config.num_retries; i++) {
     try {
-      const { buffer } = await request(url, timeout)
+      const { status, buffer } = await request(url, timeout)
+      if (status < 200 || status >= 400) break
       if (buffer.length) {
         await save(url, buffer)
         logger.info('[downloaded]\t' + url)

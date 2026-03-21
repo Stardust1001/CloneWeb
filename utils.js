@@ -41,6 +41,7 @@ export const isValidUrl = url => {
     || url.startsWith('tel:')
     || url.startsWith('data:')
     || url.startsWith('mailto:')
+    || url.includes('&quot;')
   ) return false
   return true
 }
@@ -78,6 +79,11 @@ export const processMatched = (url, items) => {
     if (isValidUrl(link)) {
       const formatted = formatUrl(link, url)
       if (!formatted) return
+      try {
+        new URL(formatted)
+      } catch {
+        return logger.error('无效连接: ' + formatted)
+      }
       valids[part] = [link, formatted]
       if (!allLinks.has(formatted)) {
         allLinks.add(formatted)
@@ -119,6 +125,10 @@ export const buffer2Text = (headers, buffer) => {
 
 export const getAbsPath = url => {
   let { host, pathname } = new URL(url)
+  if (!getExtname(url)) {
+    const parts = pathname.split('.')
+    pathname = parts[0] + '.' + parts[1].split('/')[0]
+  }
   let filename = pathname.slice(1)
   if (filename) {
     if (filename.includes('.')) {
