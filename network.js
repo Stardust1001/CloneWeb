@@ -1,9 +1,10 @@
 import https from 'node:https'
 import http from 'node:http'
+import { fsUtils } from '@wp1001/node'
 
 import { config } from './common.js'
 import logger from './logger.js'
-import { buffer2Text, save } from './utils.js'
+import { getAbsPath, buffer2Text, save } from './utils.js'
 
 export const request = async (url, timeout = config.timeout) => {
   const lib = url.startsWith('https') ? https : http
@@ -22,6 +23,10 @@ export const request = async (url, timeout = config.timeout) => {
           buffer: Buffer.concat(chunks)
         })
       })
+    })
+    req.on('error', err => {
+      clearTimeout(timer)
+      reject(err.toString())
     })
     const timer = setTimeout(() => {
       req.destroy()
@@ -43,6 +48,8 @@ export const get = async (url, timeout = config.timeout) => {
 }
 
 export const download = async (url, timeout = config.download_timeout) => {
+  const filepath = getAbsPath(url)
+  if (await fsUtils.exists(filepath)) return
   for (let i = 0; i < config.num_retries; i++) {
     try {
       const { buffer } = await request(url, timeout)
