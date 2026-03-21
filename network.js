@@ -36,16 +36,20 @@ export const request = async (url, timeout = config.timeout) => {
 }
 
 export const get = async (url, timeout = config.timeout) => {
+  let text = ''
   for (let i = 0; i < config.num_retries; i++) {
     try {
       const { headers, buffer } = await request(url, timeout)
-      return buffer2Text(headers, buffer)
+      text = buffer2Text(headers, buffer)
+      if (text) break
     } catch (err) {
       logger.error(err.toString())
     }
   }
-  logger.warn('[failed get]\t' + url)
-  return ''
+  if (!text) {
+    logger.warn('[failed get]\t' + url)
+  }
+  return text
 }
 
 export const download = async (url, timeout = config.download_timeout) => {
