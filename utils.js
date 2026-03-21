@@ -31,7 +31,12 @@ export const processCss = (url, text) => {
 
 export const getExtname = url => {
   const { pathname } = new URL(url)
-  return path.extname(pathname).slice(1).toLowerCase()
+  let ext = path.extname(pathname).slice(1).toLowerCase()
+  if (!ext && pathname.includes('.')) {
+    const parts = pathname.split('.')
+    ext = parts[1].split('/')[0]
+  }
+  return ext
 }
 
 export const isValidUrl = url => {
@@ -125,7 +130,8 @@ export const buffer2Text = (headers, buffer) => {
 
 export const getAbsPath = url => {
   let { host, pathname } = new URL(url)
-  if (!getExtname(url) && pathname.includes('.')) {
+  const ext = path.extname(pathname).slice(1).toLowerCase()
+  if (!ext && pathname.includes('.')) {
     const parts = pathname.split('.')
     pathname = parts[0] + '.' + parts[1].split('/')[0]
   }
