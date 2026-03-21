@@ -2,7 +2,7 @@ import path from 'node:path'
 import iconv from 'iconv-lite'
 import { fsUtils } from '@wp1001/node'
 
-import { config, allLinks, newUrls } from './common.js'
+import { config, allDomains, allLinks, newUrls } from './common.js'
 import logger from './logger.js'
 
 export const processHtml = (url, text) => {
