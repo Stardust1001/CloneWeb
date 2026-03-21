@@ -45,6 +45,7 @@ export const get = async (url, timeout = config.timeout) => {
     }
   }
   logger.warn('[failed get]\t' + url)
+  return ''
 }
 
 export const download = async (url, timeout = config.download_timeout) => {
