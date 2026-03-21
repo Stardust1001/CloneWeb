@@ -57,7 +57,11 @@ export const formatUrl = (url, referer) => {
     finalU = new URL(url, referer)
     url = finalU.href
   }
-  finalU ||= new URL(url)
+  try {
+    finalU ||= new URL(url)
+  } catch {
+    return
+  }
   const { hostname, origin, pathname } = finalU
   if (!config.host_pattern.test(hostname)) return
   return origin + pathname
