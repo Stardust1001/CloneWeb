@@ -8,12 +8,12 @@ import { processHtml, processCss, getExtname, getAbsPath, save } from './utils.j
 const start = async () => {
   const text = await get(config.site)
   processHtml(config.site, text)
+  let numFinished = 0
   while (true) {
     if (!newUrls.length) break
     const urls = newUrls.slice()
     newUrls.splice(0, newUrls.length)
     logger.info(`已检索到 ${allLinks.size} 条链接`)
-    let numFinished = 0
     await promises.schedule(async i => {
       const url = urls[i]
       const extname = getExtname(url) || 'html'
@@ -26,7 +26,7 @@ const start = async () => {
       } else {
         await download(url)
       }
-      logger.info(`剩余 ${urls.length - ++numFinished} 条链接待处理`)
+      logger.info(`已处理 ${++numFinished}/${allLinks.size} 条链接`)
     }, urls.length, config.concurrency)
   }
   logger.info(`已结束，总共检索到 ${allLinks.size} 条链接`)
