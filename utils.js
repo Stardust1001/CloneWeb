@@ -125,7 +125,7 @@ export const buffer2Text = (headers, buffer) => {
 
 export const getAbsPath = url => {
   let { host, pathname } = new URL(url)
-  if (!getExtname(url)) {
+  if (!getExtname(url) && pathname.includes('.')) {
     const parts = pathname.split('.')
     pathname = parts[0] + '.' + parts[1].split('/')[0]
   }
