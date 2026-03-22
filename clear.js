@@ -20,7 +20,7 @@ await promises.schedule(async i => {
     isEmpty = !subs.length
   } else {
     const stat = await fsUtils.stat(file)
-    isEmpty = !stat.size
+    isEmpty = !stat?.size
   }
   if (isEmpty) {
     await fsUtils.remove(file)

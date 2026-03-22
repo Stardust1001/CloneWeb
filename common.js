@@ -1,3 +1,4 @@
+export const allDomains = new Set()
 export const allLinks = new Set()
 export const newUrls = []
 
@@ -5,7 +6,7 @@ export const config = {
   // 要下载的目标网站
   site: 'https://www.example.com/',
   // 允许关联下载哪些域名，正则表达式匹配
-  host_pattern: /example.com/,
+  host_pattern: /example\./,
 
   // 下载文件保存到哪里
   dirname: './site',
