@@ -41,6 +41,7 @@ export const getExtname = url => {
 
 export const isValidUrl = url => {
   if (!url) return false
+  if (url === '.') return false
   if (
     url.startsWith('javascript:')
     || url.startsWith('tel:')
@@ -110,6 +111,7 @@ export const replaceLinks = (referer, text, valids) => {
     const urlPath = getAbsPath(url)
     const relative = path.relative(replacerPath, urlPath).slice(1)
     const replacer = part.replace(link, relative)
+    if (part === replacer) return
     text = text.replaceAll(part, replacer)
   })
   return text
