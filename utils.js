@@ -13,6 +13,11 @@ export const processHtml = (url, text) => {
   matches.forEach(m => m[2] && items.push([m[0], m[2]]))
   matches = text.match(/<meta\s+http-equiv="refresh"\s+content="[^(url)]*url="?([^"]+)"?>/i)
   matches && items.push([matches[0], matches[1]])
+  if (config.deep_detect) {
+    config.deep_patterns.forEach(([reg, no]) => {
+      [...text.matchAll(reg)].forEach(m => m[no] && items.push([m[0], m[no]]))
+    })
+  }
   const valids = processMatched(url, items)
   text = replaceLinks(url, text, valids)
   save(url, text)
@@ -23,6 +28,17 @@ export const processCss = (url, text) => {
   const items = []
   const matches = [...text.matchAll(config.patterns.css_url)]
   matches.forEach(m => m[2] && items.push([m[0], m[2]]))
+  const valids = processMatched(url, items)
+  text = replaceLinks(url, text, valids)
+  save(url, text)
+  logger.info('[processed]\t' + url)
+}
+
+export const processJs = (url, text) => {
+  const items = []
+  config.deep_patterns.forEach(([reg, no]) => {
+    [...text.matchAll(reg)].forEach(m => m[no] && items.push([m[0], m[no]]))
+  })
   const valids = processMatched(url, items)
   text = replaceLinks(url, text, valids)
   save(url, text)

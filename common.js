@@ -20,6 +20,13 @@ export const config = {
   download_timeout: 1200e3,
   // 同一个请求的尝试次数
   num_retries: 3,
+  // 深入检测，比如 js 脚本里动态添加的资源链接
+  deep_detect: true,
+  // 深入检测动态链接的正则
+  deep_patterns: [
+    [/\"([^"]+\.(js|css))\"/gi, 1],
+    [/\'([^']+\.(js|css))\'/gi, 1]
+  ],
   // 日志控制
   logger: {
     // 控制台日志关闭，默认是开启

@@ -4,7 +4,7 @@ import { sleep, promises } from '@wp1001/js'
 import { get, download } from './network.js'
 import { config, allDomains, allLinks, newUrls } from './common.js'
 import logger from './logger.js'
-import { processHtml, processCss, getExtname, getAbsPath, save } from './utils.js'
+import { processHtml, processCss, processJs, getExtname, getAbsPath, save } from './utils.js'
 
 const start = async () => {
   const text = await get(config.site)
@@ -18,7 +18,10 @@ const start = async () => {
     await promises.schedule(async i => {
       const url = urls[i]
       const extname = getExtname(url) || 'html'
-      if (extname === 'css') {
+      if (config.deep_detect && extname === 'js') {
+        const text = await get(url)
+        processJs(url, text)
+      } else if (extname === 'css') {
         const text = await get(url)
         processCss(url, text)
       } else if (config.patterns.html_ext.test(extname)) {
