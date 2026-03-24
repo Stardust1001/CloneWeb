@@ -40,7 +40,7 @@ export const get = async (url, timeout = config.timeout) => {
   for (let i = 0; i < config.num_retries; i++) {
     try {
       const { status, headers, buffer } = await request(url, timeout)
-      if (status < 200 || status >= 400) break
+      if (status < 200 || status >= 400) return ''
       text = buffer2Text(headers, buffer)
       if (text) break
     } catch (err) {

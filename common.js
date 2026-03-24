@@ -22,11 +22,6 @@ export const config = {
   num_retries: 3,
   // 深入检测，比如 js 脚本里动态添加的资源链接
   deep_detect: true,
-  // 深入检测动态链接的正则
-  deep_patterns: [
-    [/\"([^"]+\.(js|css))\"/gi, 1],
-    [/\'([^']+\.(js|css))\'/gi, 1]
-  ],
   // 日志控制
   logger: {
     // 控制台日志关闭，默认是开启
@@ -38,9 +33,20 @@ export const config = {
     // html 网址的后缀类型
     html_ext: /(html|htm|xhtml|shtml|dhtml|php|phtml|jsp|asp|aspx|do|action)/i,
     // html 代码里检测关联网址
-    html_url: /(href|src)=(["'])([^"']*)/g,
+    html_url: [
+      [/(href|src)=(["'])([^"']*)/g, 3],
+      [/(href|src)=([^"'\s>]+)(\s|>)/g, 2],
+      [/<meta\s+http-equiv="refresh"\s+content="[^(url)]*url="?([^"]+)"?>/gi, 1]
+    ],
     // css 代码里检测关联网址
-    css_url: /url\((["'])([^"']*)/g
+    css_url: [
+      [/url\((["'])([^"']*)/g, 2]
+    ],
+    // 深入检测动态链接的正则
+    js_url: [
+      [/\"([^"]+\.(js|css|html|png|jpg|svg|jpeg|gif|webp|ttf|woff|woff2|eot|php|jsp|asp|aspx|pdf|exe|zip|rar|mp3|mp4|txt|doc|docx|xls|xlsx|ppt|pptx))\"/gi, 1],
+      [/\'([^']+\.(js|css|html|png|jpg|svg|jpeg|gif|webp|ttf|woff|woff2|eot|php|jsp|asp|aspx|pdf|exe|zip|rar|mp3|mp4|txt|doc|docx|xls|xlsx|ppt|pptx))\'/gi, 1]
+    ]
   },
   // 自定义请求头
   headers: {

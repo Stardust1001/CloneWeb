@@ -1,36 +1,21 @@
 import { fsUtils } from '@wp1001/node'
-import { sleep, promises } from '@wp1001/js'
+import { promises } from '@wp1001/js'
 
-import { get, download } from './network.js'
 import { config, allDomains, allLinks, newUrls } from './common.js'
 import logger from './logger.js'
-import { processHtml, processCss, processJs, getExtname, getAbsPath, save } from './utils.js'
+import { processUrl } from './utils.js'
 
 const start = async () => {
-  const text = await get(config.site)
-  processHtml(config.site, text)
-  let numFinished = 0
+  await processUrl(config.site)
+  let count = 0
   while (true) {
     if (!newUrls.length) break
     const urls = newUrls.slice()
     newUrls.splice(0, newUrls.length)
     logger.info(`已检索到 ${allLinks.size} 条链接`)
     await promises.schedule(async i => {
-      const url = urls[i]
-      const extname = getExtname(url) || 'html'
-      if (config.deep_detect && extname === 'js') {
-        const text = await get(url)
-        processJs(url, text)
-      } else if (extname === 'css') {
-        const text = await get(url)
-        processCss(url, text)
-      } else if (config.patterns.html_ext.test(extname)) {
-        const text = await get(url)
-        processHtml(url, text)
-      } else {
-        await download(url)
-      }
-      logger.info(`已处理 ${++numFinished}/${allLinks.size} 条链接`)
+      await processUrl(urls[i])
+      logger.info(`已处理 ${++count}/${allLinks.size} 条链接`)
     }, urls.length, config.concurrency)
     fsUtils.write('./all_domains.txt', [...allDomains].join('\n'))
     fsUtils.write('./all_links.txt', [...allLinks].join('\n'))

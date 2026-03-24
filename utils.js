@@ -2,47 +2,37 @@ import path from 'node:path'
 import iconv from 'iconv-lite'
 import { fsUtils } from '@wp1001/node'
 
+import { get, download } from './network.js'
 import { config, allDomains, allLinks, newUrls } from './common.js'
 import logger from './logger.js'
 
-export const processHtml = (url, text) => {
-  const items = []
-  let matches = [...text.matchAll(config.patterns.html_url)]
-  matches.forEach(m => m[3] && items.push([m[0], m[3]]))
-  matches = [...text.matchAll(config.patterns.css_url)]
-  matches.forEach(m => m[2] && items.push([m[0], m[2]]))
-  matches = text.match(/<meta\s+http-equiv="refresh"\s+content="[^(url)]*url="?([^"]+)"?>/i)
-  matches && items.push([matches[0], matches[1]])
-  if (config.deep_detect) {
-    config.deep_patterns.forEach(([reg, no]) => {
-      [...text.matchAll(reg)].forEach(m => m[no] && items.push([m[0], m[no]]))
-    })
+const { deep_detect, patterns, host_pattern, dirname } = config
+const { html_url, css_url, js_url, html_ext } = patterns
+
+export const processUrl = async (url) => {
+  const extname = getExtname(url) || 'html'
+  let regs = []
+  if (deep_detect && extname === 'js') {
+    regs = js_url
+  } else if (extname === 'css') {
+    regs = css_url
+  } else if (html_ext.test(extname)) {
+    regs = html_url.concat(css_url)
+    if (deep_detect) {
+      regs.push(...js_url)
+    }
+  } else {
+    return download(url)
   }
-  const valids = processMatched(url, items)
-  text = replaceLinks(url, text, valids)
-  save(url, text)
-  logger.info('[processed]\t' + url)
-}
-
-export const processCss = (url, text) => {
+  let text = await get(url)
+  if (!text) return
   const items = []
-  const matches = [...text.matchAll(config.patterns.css_url)]
-  matches.forEach(m => m[2] && items.push([m[0], m[2]]))
-  const valids = processMatched(url, items)
-  text = replaceLinks(url, text, valids)
-  save(url, text)
-  logger.info('[processed]\t' + url)
-}
-
-export const processJs = (url, text) => {
-  const items = []
-  config.deep_patterns.forEach(([reg, no]) => {
+  regs.forEach(([reg, no]) => {
     [...text.matchAll(reg)].forEach(m => m[no] && items.push([m[0], m[no]]))
   })
   const valids = processMatched(url, items)
   text = replaceLinks(url, text, valids)
   save(url, text)
-  logger.info('[processed]\t' + url)
 }
 
 export const getExtname = url => {
@@ -87,7 +77,7 @@ export const formatUrl = (url, referer) => {
   }
   const { hostname, origin, pathname } = finalU
   if (!hostname || origin === 'null') return
-  if (!config.host_pattern.test(hostname)) return
+  if (!host_pattern.test(hostname)) return
   return origin + pathname
 }
 
@@ -159,7 +149,7 @@ export const getAbsPath = url => {
   if (filename) {
     if (filename.includes('.')) {
       const ext = path.extname(pathname).slice(1).toLowerCase()
-      if (ext !== 'html' && config.patterns.html_ext.test(ext)) {
+      if (ext !== 'html' && html_ext.test(ext)) {
         const dirname = path.dirname(pathname)
         const basename = path.basename(pathname).split('.')[0] + '.html'
         pathname = path.join(dirname, basename)
@@ -173,7 +163,7 @@ export const getAbsPath = url => {
   }
   filename = filename.replace(/(\s|%20)/g, '_')
   host = host.replace(/[\.\:]/g, '_')
-  return path.join(config.dirname, host, filename)
+  return path.join(dirname, host, filename)
 }
 
 export const save = async (url, content) => {
