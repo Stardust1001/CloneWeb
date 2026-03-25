@@ -62,7 +62,6 @@ export const download = async (url, timeout = config.download_timeout) => {
       if (status < 200 || status >= 400) break
       if (buffer.length) {
         await save(url, buffer)
-        logger.info('[downloaded]\t' + url)
         return
       }
     } catch (err) {

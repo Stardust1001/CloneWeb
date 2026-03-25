@@ -6,7 +6,7 @@ export const config = {
   // 要下载的目标网站
   site: 'https://www.example.com/',
   // 允许关联下载哪些域名，正则表达式匹配
-  host_pattern: /example\./,
+  host_pattern: /example/,
 
   // 下载文件保存到哪里
   dirname: './site',
@@ -50,9 +50,11 @@ export const config = {
   },
   // 自定义请求头
   headers: {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0 Win64 x64) AppleWebKit/537.36',
-    'Accept': 'application/json',
-    'Accept-Language': 'zh-CN,zhq=0.9',
-    'Connection': 'keep-alive'
+    'accept': 'application/json, text/plain, */*',
+    'connection': 'keep-alive',
+    'cache-control': 'no-cache',
+    'pragma': 'no-cache',
+    'priority': 'u=1, i',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
   }
 }
